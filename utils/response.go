@@ -2,14 +2,14 @@ package utils
 
 // Response is a standardized API response
 type Response struct {
-	Success bool        `json:"success"`
-	Message string      `json:"message,omitempty"`
-	Data    interface{} `json:"data,omitempty"`
-	Error   string      `json:"error,omitempty"`
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
+	Data    any    `json:"data,omitempty"`
+	Error   string `json:"error,omitempty"`
 }
 
 // SuccessResponse returns a standardized success response
-func SuccessResponse(data interface{}, message string) Response {
+func SuccessResponse(data any, message string) Response {
 	return Response{
 		Success: true,
 		Message: message,

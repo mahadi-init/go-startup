@@ -1,7 +1,6 @@
 package api
 
 import (
-	"gin-app/controllers"
 	"gin-app/middleware"
 	"gin-app/routes"
 	"github.com/gin-gonic/gin"
@@ -21,9 +20,6 @@ func SetupRouter() *gin.Engine {
 	router.Use(middleware.Logger())
 	router.Use(middleware.CORS())
 
-	// Initialize controllers
-	userController := controllers.NewUserController()
-
 	// Setup routes
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -31,9 +27,11 @@ func SetupRouter() *gin.Engine {
 		})
 	})
 
-	// Register user routes
-	userRoutes := router.Group("/api")
-	routes.RegisterUserRoutes(userRoutes, userController)
+	// root (/api)
+	root := router.Group("/api")
+
+	// Register routes
+	routes.Register(root)
 	return router
 }
 

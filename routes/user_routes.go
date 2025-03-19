@@ -6,7 +6,9 @@ import (
 )
 
 // RegisterUserRoutes registers all user-related routes
-func RegisterUserRoutes(router *gin.RouterGroup, controller *controllers.UserController) {
+func RegisterUserRoutes(router *gin.RouterGroup) {
+	controller := controllers.NewUserController()
+
 	users := router.Group("/users")
 	{
 		users.GET("", controller.GetUsers)
