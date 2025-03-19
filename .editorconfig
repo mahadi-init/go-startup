@@ -1,0 +1,37 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# Top-level settings
+root = true
+
+# Apply to all files
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = tab
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Go-specific settings
+[*.go]
+indent_style = tab
+indent_size = 4
+
+# Makefile settings
+[Makefile]
+indent_style = tab
+indent_size = 4
+
+# YAML settings
+[*.yaml, *.yml]
+indent_style = space
+indent_size = 2
+
+# JSON settings
+[*.json]
+indent_style = space
+indent_size = 2
+
+# Markdown settings
+[*.md]
+trim_trailing_whitespace = false
