@@ -18,8 +18,8 @@ func Logger() gin.HandlerFunc {
 		// Calculate latency
 		latency := time.Since(start)
 
-		// Log request details
-		fmt.Printf("[%s] %s %s %d %s\n",
+		// Log request details with colorized output
+		fmt.Printf("\n\033[1;34m[%s]\033[0m \033[1;32m%s\033[0m \033[1;36m%s\033[0m \033[1;33m%d\033[0m \033[1;31m%s\033[0m\n",
 			time.Now().Format(time.RFC3339),
 			c.Request.Method,
 			c.Request.URL.Path,
