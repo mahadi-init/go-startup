@@ -1,10 +1,13 @@
 package api
 
 import (
+	"gin-app/db"
 	"gin-app/middleware"
 	"gin-app/routes"
-	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // SetupRouter creates and configures a Gin router
@@ -12,8 +15,11 @@ func SetupRouter() *gin.Engine {
 	// Set Gin to release mode in production
 	// gin.SetMode(gin.ReleaseMode) // Uncomment this for production
 
-	// db connect
-	ConnectDb()
+	// Initialize DB connection
+	_, err := db.InitDB()
+	if err != nil {
+		log.Fatalf("Failed to initialize database: %s", err)
+	}
 
 	// Create a new Gin engine
 	router := gin.New()
