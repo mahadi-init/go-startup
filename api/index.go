@@ -12,6 +12,9 @@ func SetupRouter() *gin.Engine {
 	// Set Gin to release mode in production
 	// gin.SetMode(gin.ReleaseMode) // Uncomment this for production
 
+	// db connect
+	ConnectDb()
+
 	// Create a new Gin engine
 	router := gin.New()
 	router.Use(gin.Recovery())
