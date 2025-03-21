@@ -7,11 +7,9 @@ import (
 
 // RegisterUserRoutes registers all user-related routes
 func RegisterUserRoutes(router *gin.RouterGroup) {
-	controller := controllers.NewUserController()
-
 	users := router.Group("/users")
 	{
-		users.GET("", controller.GetUsers)
+		users.GET("", controller.GetAllUsers)
 		users.GET("/:id", controller.GetUser)
 		users.POST("", controller.CreateUser)
 		users.PUT("/:id", controller.UpdateUser)
