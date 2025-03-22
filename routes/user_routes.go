@@ -6,13 +6,13 @@ import (
 )
 
 // RegisterUserRoutes registers all user-related routes
-func RegisterUserRoutes(router *gin.RouterGroup, controller *controllers.UserController) {
+func RegisterUserRoutes(router *gin.RouterGroup) {
 	users := router.Group("/users")
 	{
-		users.GET("", controller.GetUsers)
-		users.GET("/:id", controller.GetUser)
-		users.POST("", controller.CreateUser)
-		users.PUT("/:id", controller.UpdateUser)
-		users.DELETE("/:id", controller.DeleteUser)
+		users.GET("/all", controller.GetAllUsers)
+		users.GET("/single/:id", controller.GetUser)
+		users.POST("/create", controller.CreateUser)
+		users.PUT("/update/:id", controller.UpdateUser)
+		users.DELETE("/delele/:id", controller.DeleteUser)
 	}
 }

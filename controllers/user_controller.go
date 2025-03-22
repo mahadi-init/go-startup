@@ -1,119 +1,132 @@
-package controllers
+package controller
 
 import (
+	"database/sql"
+	"gin-app/db"
 	"gin-app/models"
-	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
-	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
-// UserController handles user-related requests
-type UserController struct {
-	// In a real application, you would inject a service or repository here
-	users  []models.User
-	nextID int
-}
+// CreateUser handles creating a new user.
+func CreateUser(c *gin.Context) {
+	var user models.User
 
-// NewUserController creates a new user controller with sample data
-func NewUserController() *UserController {
-	// Initialize with some sample data
-	return &UserController{
-		users: []models.User{
-			{ID: 1, Name: "John Doe", Email: "john@example.com", Age: 30},
-			{ID: 2, Name: "Jane Smith", Email: "jane@example.com", Age: 25},
-		},
-		nextID: 3,
-	}
-}
-
-// GetUsers returns all users
-func (uc *UserController) GetUsers(c *gin.Context) {
-	c.JSON(http.StatusOK, uc.users)
-}
-
-// GetUser returns a specific user by ID
-func (uc *UserController) GetUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-
-	for _, user := range uc.users {
-		if user.ID == id {
-			c.JSON(http.StatusOK, user)
-			return
-		}
-	}
-
-	c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-}
-
-// CreateUser creates a new user
-func (uc *UserController) CreateUser(c *gin.Context) {
-	var newUser models.User
-	if err := c.ShouldBindJSON(&newUser); err != nil {
+	// Bind JSON request body to user model
+	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Validate user data
-	if newUser.Name == "" || newUser.Email == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Name and email are required"})
+	// Create the user in the database using raw SQL
+	sqlStatement := `INSERT INTO users (name, email, phone, password, age, gender)
+                     VALUES (?, ?, ?, ?, ?, ?)`
+	result, err := db.GetDB().Exec(sqlStatement, user.Name, user.Email, user.Phone, user.Password, user.Age, user.Gender)
+	if err != nil {
+		log.Println("Error creating user:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Set the ID and add to users
-	newUser.ID = uc.nextID
-	uc.nextID++
-	uc.users = append(uc.users, newUser)
-
-	c.JSON(http.StatusCreated, newUser)
+	// Return success response
+	id, _ := result.LastInsertId()
+	user.ID = int(id)
+	c.JSON(http.StatusCreated, user)
 }
 
-// UpdateUser updates an existing user
-func (uc *UserController) UpdateUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func GetAllUsers(c *gin.Context) {
+	// Query to fetch all users from the database
+	sqlStatement := `SELECT id, name, email, phone, password, age, gender FROM users`
+	rows, err := db.GetDB().Query(sqlStatement)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		log.Println("Error fetching users:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
+		return
+	}
+	defer rows.Close()
+
+	var users []models.User
+	for rows.Next() {
+		var user models.User
+		if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.Phone, &user.Password, &user.Age, &user.Gender); err != nil {
+			log.Println("Error scanning row:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read user data"})
+			return
+		}
+		users = append(users, user)
+	}
+
+	// Check if there was an error iterating over the rows
+	if err := rows.Err(); err != nil {
+		log.Println("Error iterating over rows:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
 		return
 	}
 
-	var updatedUser models.User
-	if err := c.ShouldBindJSON(&updatedUser); err != nil {
+	// Return success response with the list of users
+	c.JSON(http.StatusOK, users)
+}
+
+// GetUser retrieves a single user by ID.
+func GetUser(c *gin.Context) {
+	id := c.Param("id")
+
+	// Query to fetch the user from the database
+	var user models.User
+	sqlStatement := `SELECT id, name, email, phone, password, age, gender FROM users WHERE id = ?`
+	err := db.GetDB().QueryRow(sqlStatement, id).Scan(&user.ID, &user.Name, &user.Email, &user.Phone, &user.Password, &user.Age, &user.Gender)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		} else {
+			log.Println("Error fetching user:", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}
+
+// UpdateUser updates an existing user by ID.
+func UpdateUser(c *gin.Context) {
+	id := c.Param("id")
+	var user models.User
+
+	// Bind JSON request body to user model
+	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	for i, user := range uc.users {
-		if user.ID == id {
-			// Preserve the ID
-			updatedUser.ID = id
-			uc.users[i] = updatedUser
-			c.JSON(http.StatusOK, updatedUser)
-			return
-		}
-	}
-
-	c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-}
-
-// DeleteUser deletes a user by ID
-func (uc *UserController) DeleteUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	// Update the user in the database
+	sqlStatement := `UPDATE users SET name = ?, email = ?, phone = ?, password = ?, age = ?, gender = ? WHERE id = ?`
+	_, err := db.GetDB().Exec(sqlStatement, user.Name, user.Email, user.Phone, user.Password, user.Age, user.Gender, id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		log.Println("Error updating user:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
 		return
 	}
 
-	for i, user := range uc.users {
-		if user.ID == id {
-			// Remove the user from the slice
-			uc.users = append(uc.users[:i], uc.users[i+1:]...)
-			c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
-			return
-		}
+	// Return success response
+	c.JSON(http.StatusOK, gin.H{"message": "User updated successfully"})
+}
+
+// DeleteUser deletes a user by ID.
+func DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+
+	// Delete the user from the database
+	sqlStatement := `DELETE FROM users WHERE id = ?`
+	_, err := db.GetDB().Exec(sqlStatement, id)
+	if err != nil {
+		log.Println("Error deleting user:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete user"})
+		return
 	}
 
-	c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+	// Return success response
+	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
