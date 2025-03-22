@@ -9,18 +9,18 @@ type Response struct {
 }
 
 // SuccessResponse returns a standardized success response
-func SuccessResponse(data any, message string) Response {
+func SuccessResponse(data any) Response {
 	return Response{
 		Success: true,
-		Message: message,
 		Data:    data,
 	}
 }
 
 // ErrorResponse returns a standardized error response
-func ErrorResponse(err string) Response {
+func ErrorResponse(err string, message string) Response {
 	return Response{
 		Success: false,
+		Message: message,
 		Error:   err,
 	}
 }

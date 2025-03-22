@@ -26,7 +26,7 @@ func CreateUser(c *gin.Context) {
 	result, err := db.GetDB().Exec(sqlStatement, user.Name, user.Email, user.Phone, user.Password, user.Age, user.Gender)
 	if err != nil {
 		log.Println("Error creating user:", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
