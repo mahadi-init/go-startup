@@ -7,7 +7,7 @@ import (
 )
 
 func RegisterBannerRoutes(router *gin.RouterGroup) {
-	banners := router.Group("/0/anners")
+	banners := router.Group("/0/banners")
 
 	banners.GET("/all", controller.GetAllBanners)
 	banners.GET("/single/:id", controller.GetBanner)
