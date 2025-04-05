@@ -6,4 +6,5 @@ import (
 
 func Register(router *gin.RouterGroup) {
 	RegisterUserRoutes(router)
+	RegisterBannerRoutes(router)
 }

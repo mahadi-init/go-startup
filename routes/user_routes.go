@@ -1,11 +1,11 @@
 package routes
 
 import (
-	"gin-app/controllers"
+	controller "gin-app/controllers"
+
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterUserRoutes registers all user-related routes
 func RegisterUserRoutes(router *gin.RouterGroup) {
 	users := router.Group("/users")
 	{
@@ -13,6 +13,6 @@ func RegisterUserRoutes(router *gin.RouterGroup) {
 		users.GET("/single/:id", controller.GetUser)
 		users.POST("/create", controller.CreateUser)
 		users.PUT("/update/:id", controller.UpdateUser)
-		users.DELETE("/delele/:id", controller.DeleteUser)
+		users.DELETE("/delete/:id", controller.DeleteUser)
 	}
 }
