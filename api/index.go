@@ -25,6 +25,13 @@ func SetupRouter() *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Recovery())
 
+	// home route
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Welcome to Go API with Gin on Vercel!",
+		})
+	})
+
 	// Apply global middleware
 	router.Use(middleware.Logger())
 	router.Use(middleware.CORS())
