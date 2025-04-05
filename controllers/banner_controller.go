@@ -19,7 +19,7 @@ func CreateBanner(c *gin.Context) {
 	}
 
 	sqlStatement := `INSERT INTO banners (name, src, link)
-                     VALUES (?, ?, ?, ?, ?, ?)`
+                     VALUES (?, ?, ?)`
 	result, err := db.GetDB().Exec(sqlStatement, banner.Name, banner.Src, banner.Link)
 	if err != nil {
 		log.Println("Error creating banner:", err)
