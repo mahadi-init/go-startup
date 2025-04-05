@@ -14,16 +14,8 @@ func Register(router *gin.Engine) {
 		})
 	})
 
-	// auth routes (unprotected)
-	auth := router.Group("/auth")
-	{
-		RegisterAuthRoutes(auth)
-	}
-
-	// api routes (protected)
-	api := router.Group("/api")
-	{
-		RegisterUserRoutes(api)
-		RegisterBannerRoutes(api)
-	}
+	root := router.Group("/api")
+	RegisterAuthRoutes(root)
+	RegisterUserRoutes(root)
+	RegisterBannerRoutes(root)
 }

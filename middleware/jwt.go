@@ -10,8 +10,8 @@ import (
 
 func JWTAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Allow access to /auth routes without token
-		if strings.HasPrefix(c.Request.URL.Path, "/auth") {
+		// Allow access to /0/ routes without token
+		if strings.Contains(c.Request.URL.Path, "/0/") {
 			c.Next()
 			return
 		}

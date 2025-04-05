@@ -13,7 +13,7 @@ import (
 // SetupRouter creates and configures a Gin router
 func SetupRouter() *gin.Engine {
 	// Set Gin to release mode in production
-	// gin.SetMode(gin.ReleaseMode) // Uncomment this for production
+	gin.SetMode(gin.ReleaseMode) // Uncomment this for production
 
 	// Initialize DB connection
 	_, err := db.InitDB()
