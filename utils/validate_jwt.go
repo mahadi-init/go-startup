@@ -6,9 +6,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/joho/godotenv"
 )
-
-var jwtSecret = []byte(os.Getenv("JWT"))
 
 type Claims struct {
 	UserID int `json:"user_id"`
@@ -16,6 +15,9 @@ type Claims struct {
 }
 
 func ValidateJWTToken(tokenString string) (*Claims, error) {
+	godotenv.Load()
+	var jwtSecret = []byte(os.Getenv("JWT"))
+
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (any, error) {
 		return jwtSecret, nil
 	})
