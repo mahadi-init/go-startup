@@ -13,7 +13,7 @@ import (
 // SetupRouter creates and configures a Gin router
 func SetupRouter() *gin.Engine {
 	// Set Gin to release mode in production
-	gin.SetMode(gin.ReleaseMode) // Uncomment this for production
+	// gin.SetMode(gin.ReleaseMode) // Uncomment this for production
 
 	// Initialize DB connection
 	_, err := db.InitDB()
@@ -28,19 +28,10 @@ func SetupRouter() *gin.Engine {
 	// Apply global middleware
 	router.Use(middleware.Logger())
 	router.Use(middleware.CORS())
-
-	// Setup routes
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Welcome to Go API with Gin on Vercel!",
-		})
-	})
-
-	// root (/api)
-	root := router.Group("/api")
+	router.Use(middleware.JWTAuthMiddleware())
 
 	// Register routes
-	routes.Register(root)
+	routes.Register(router)
 	return router
 }
 
