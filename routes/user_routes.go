@@ -7,11 +7,11 @@ import (
 )
 
 func RegisterUserRoutes(router *gin.RouterGroup) {
-	users := router.Group("/users")
+	protected := router.Group("/users")
 
-	users.GET("/all", controller.GetAllUsers)
-	users.GET("/single/:id", controller.GetUser)
-	users.POST("/create", controller.CreateUser)
-	users.PUT("/update/:id", controller.UpdateUser)
-	users.DELETE("/delete/:id", controller.DeleteUser)
+	protected.GET("/all", controller.GetAllUsers)
+	protected.GET("/single/:id", controller.GetUser)
+	protected.POST("/create", controller.CreateUser)
+	protected.PUT("/update/:id", controller.UpdateUser)
+	protected.DELETE("/delete/:id", controller.DeleteUser)
 }

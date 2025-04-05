@@ -7,11 +7,13 @@ import (
 )
 
 func RegisterBannerRoutes(router *gin.RouterGroup) {
-	banners := router.Group("/0/banners")
+	open := router.Group("/0/banners")
+	open.GET("/all", controller.GetAllBanners)
+	open.GET("/single/:id", controller.GetBanner)
 
-	banners.GET("/all", controller.GetAllBanners)
-	banners.GET("/single/:id", controller.GetBanner)
-	banners.POST("/create", controller.CreateBanner)
-	banners.PUT("/update/:id", controller.UpdateBanner)
-	banners.DELETE("/delete/:id", controller.DeleteBanner)
+	// protected routes
+	protected := router.Group("/banners")
+	protected.POST("/create", controller.CreateBanner)
+	protected.PUT("/update/:id", controller.UpdateBanner)
+	protected.DELETE("/delete/:id", controller.DeleteBanner)
 }
